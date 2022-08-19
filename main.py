@@ -11,11 +11,17 @@ class DrawInformation:
     RED = 255, 0, 0
     BACKGROUND_COLOR = BLACK
 
+
     # Sets color scale for bars
     GRADIENTS = [
-        (128, 128, 128),
-        (160, 160, 160),
-        (192, 192, 192)
+        (204, 229, 255),
+        (153, 204, 255),
+        (102, 178, 255),
+        (51, 153, 255),
+        (0, 128, 255),
+        (0, 102, 204),
+        (0, 76, 153),
+        (0, 51, 102)
     ]
 
     FONT = pygame.font.SysFont('Roboto', 30)
@@ -45,11 +51,14 @@ class DrawInformation:
         self.start_x = self.SIDE_PAD // 2
 
 
-def draw(draw_info, sorting_algo_name, ascending):
+def draw(draw_info, sorting_algo_name, ascending, description):
     draw_info.window.fill(draw_info.BACKGROUND_COLOR) # Fills display with preset BACKGROUND_COLOR variable
 
     title = draw_info.LARGE_FONT.render(f"{sorting_algo_name} - {'Ascending' if ascending else 'Descending'}", 1, draw_info.WHITE)
     draw_info.window.blit(title, (draw_info.width/2 - title.get_width()/2, 5)) 
+
+    description = draw_info.FONT.render(f"Description: {description}", 1, draw_info.WHITE)
+    draw_info.window.blit(description, (draw_info.width/2 - description.get_width()/2, 105))
 
     # Puts this text on the screen
     controls = draw_info.FONT.render("R - Reset | SPACE - Start Sorting | A - Ascending | D - Descending", 1, draw_info.WHITE)
@@ -74,7 +83,7 @@ def draw_list(draw_info, color_positions={}, clear_bg = False):
         x = draw_info.start_x + i * draw_info.block_width # Starts bars at their proper x position
         y = draw_info.height - (val - draw_info.min_val) * draw_info.block_height
 
-        color = draw_info.GRADIENTS[i % 3] # Makes sure every element next to the other is a different gradient color
+        color = draw_info.GRADIENTS[i % 8] # Makes sure every element next to the other is a different gradient color
         
         if i in color_positions:
             color = color_positions[i]
@@ -162,6 +171,7 @@ def main():
     sorting_algorithm = bubble_sort
     sorting_algo_name = "Bubble Sort"
     sorting_algorithm_generator = None
+    description = "Swaps adjacent items if they are out of order"
 
     while run:
         clock.tick(60) #Framerate
@@ -172,9 +182,9 @@ def main():
             except StopIteration:
                 sorting = False
         else:
-            draw(draw_info, sorting_algo_name, ascending)
+            draw(draw_info, sorting_algo_name, ascending, description)
 
-        draw(draw_info, sorting_algo_name, ascending)
+        draw(draw_info, sorting_algo_name, ascending, description)
     
         for event in pygame.event.get():
             if event.type == pygame.QUIT: # Checks for x button
@@ -196,15 +206,19 @@ def main():
                 ascending = True
             elif event.key == pygame.K_d and not sorting:
                 ascending = False
+
             elif event.key == pygame.K_i and not sorting:
                 sorting_algorithm = insertion_sort
                 sorting_algo_name = "Insertion Sort"
+                description = "Places unsorted element at correct position each iteration"
             elif event.key == pygame.K_b and not sorting:
                 sorting_algorithm = bubble_sort
                 sorting_algo_name = "Bubble Sort"
+                description = "Swaps adjacent items if they are out of order"
             elif event.key == pygame.K_s and not sorting:
                 sorting_algorithm = selection_sort
                 sorting_algo_name = "Selection Sort"
+                description = "Finds minimum element, puts at next position"
 
     pygame.quit()
 
